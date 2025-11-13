@@ -58,10 +58,14 @@ class JGrantsService:
 
         # API呼び出し
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (compatible; GrantsSearchBot/1.0)"
+            }
+            async with httpx.AsyncClient(timeout=30.0, trust_env=True) as client:
                 response = await client.get(
                     f"{self.base_url}/subsidies",
-                    params=params
+                    params=params,
+                    headers=headers
                 )
                 response.raise_for_status()
                 data = response.json()
@@ -87,9 +91,13 @@ class JGrantsService:
 
         # API呼び出し
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (compatible; GrantsSearchBot/1.0)"
+            }
+            async with httpx.AsyncClient(timeout=30.0, trust_env=True) as client:
                 response = await client.get(
-                    f"{self.base_url}/subsidies/id/{subsidy_id}"
+                    f"{self.base_url}/subsidies/id/{subsidy_id}",
+                    headers=headers
                 )
                 response.raise_for_status()
                 data = response.json()

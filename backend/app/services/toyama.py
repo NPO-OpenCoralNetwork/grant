@@ -1,4 +1,10 @@
-import feedparser
+try:
+    import feedparser
+    FEEDPARSER_AVAILABLE = True
+except ImportError:
+    FEEDPARSER_AVAILABLE = False
+    print("⚠ feedparser not available. Toyama grants RSS feed parsing will be disabled.")
+
 import json
 import os
 from datetime import datetime
@@ -30,6 +36,10 @@ class ToyamaGrantsService:
 
     def fetch_rss_feed(self, url: str, city: str) -> list[dict]:
         """RSSフィードを取得して解析"""
+        if not FEEDPARSER_AVAILABLE:
+            print(f"⚠ Cannot fetch RSS feed for {city}: feedparser not available")
+            return []
+
         feed = feedparser.parse(url)
         entries = []
 
