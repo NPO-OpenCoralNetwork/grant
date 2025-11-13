@@ -9,8 +9,8 @@ import os
 # 環境変数のロード
 load_dotenv()
 
-# APIのベースURL
-BASE_URL = "https://api.jgrants-portal.go.jp/exp/v1/public"
+# バックエンドAPIのベースURL
+BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:8000/api/v1")
 
 # 定数の定義
 USE_PURPOSES = [
@@ -95,31 +95,42 @@ def search_subsidies(keyword, sort='created_date', order='DESC', acceptance='1',
         'order': order,
         'acceptance': acceptance
     }
-    
+
+    # バックエンドAPIはカンマ区切りを想定
     if use_purpose:
-        params['use_purpose'] = ' / '.join(use_purpose)
+        params['use_purpose'] = ','.join(use_purpose)
     if industry:
-        params['industry'] = ' / '.join(industry)
+        params['industry'] = ','.join(industry)
     if target_number_of_employees:
         params['target_number_of_employees'] = target_number_of_employees
     if target_area_search:
         params['target_area_search'] = target_area_search
 
     try:
-        response = requests.get(f"{BASE_URL}/subsidies", params=params)
+        response = requests.get(f"{BACKEND_API_URL}/subsidies/search", params=params)
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        # バックエンドAPIのレスポンス形式に合わせて変換
+        return {
+            'result': data.get('subsidies', [])
+        }
     except requests.exceptions.RequestException as e:
-        st.error(f"APIリクエストエラー: {str(e)}")
+        st.error(f"バックエンドAPIエラー: {str(e)}")
         return None
 
 # 新しい関数: 補助金詳細の取得
 @st.cache_data(ttl=3600)
 def get_subsidy_details(subsidy_id):
     try:
-        response = requests.get(f"{BASE_URL}/subsidies/id/{subsidy_id}")
+        response = requests.get(f"{BACKEND_API_URL}/subsidies/{subsidy_id}")
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        # バックエンドAPIのレスポンス形式に合わせて変換
+        if data.get('subsidy'):
+            return {
+                'result': [data['subsidy']]
+            }
+        return None
     except requests.exceptions.RequestException as e:
         st.error(f"補助金詳細の取得エラー: {str(e)}")
         return None

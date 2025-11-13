@@ -2,6 +2,7 @@ import httpx
 from typing import Optional
 from app.core.config import settings
 from app.core.cache import cache
+from app.mock_data.subsidies import get_mock_search_result, get_mock_subsidy_detail
 
 
 class JGrantsService:
@@ -9,6 +10,7 @@ class JGrantsService:
 
     def __init__(self):
         self.base_url = settings.JGRANTS_BASE_URL
+        self.mock_mode = settings.MOCK_MODE
 
     async def search_subsidies(
         self,
@@ -22,6 +24,11 @@ class JGrantsService:
         target_area_search: Optional[str] = None
     ) -> Optional[dict]:
         """補助金検索"""
+
+        # モックモードの場合はモックデータを返す
+        if self.mock_mode:
+            print(f"🔧 Mock mode: Returning mock search results for keyword '{keyword}'")
+            return get_mock_search_result(keyword)
 
         # キャッシュキーの生成
         cache_key = f"subsidies:{keyword}:{sort}:{order}:{acceptance}"
@@ -80,6 +87,11 @@ class JGrantsService:
 
     async def get_subsidy_detail(self, subsidy_id: str) -> Optional[dict]:
         """補助金詳細取得"""
+
+        # モックモードの場合はモックデータを返す
+        if self.mock_mode:
+            print(f"🔧 Mock mode: Returning mock detail for subsidy '{subsidy_id}'")
+            return get_mock_subsidy_detail(subsidy_id)
 
         # キャッシュキーの生成
         cache_key = f"subsidy_detail:{subsidy_id}"

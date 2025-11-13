@@ -10,6 +10,8 @@ import os
 from datetime import datetime
 from typing import Optional
 from app.core.cache import cache
+from app.core.config import settings
+from app.mock_data.grants import get_mock_grants
 
 
 # 自治体のRSSフィード設定
@@ -33,6 +35,7 @@ class ToyamaGrantsService:
     def __init__(self):
         self.data_file = "data/grants.json"
         self.keywords = DEFAULT_KEYWORDS
+        self.mock_mode = settings.MOCK_MODE
 
     def fetch_rss_feed(self, url: str, city: str) -> list[dict]:
         """RSSフィードを取得して解析"""
@@ -101,6 +104,11 @@ class ToyamaGrantsService:
 
     def load_grants(self) -> list[dict]:
         """保存された助成金情報を読み込み"""
+
+        # モックモードの場合はモックデータを返す
+        if self.mock_mode:
+            print("🔧 Mock mode: Returning mock Toyama grants")
+            return get_mock_grants()
 
         # キャッシュから取得を試みる
         cache_key = "toyama_grants"

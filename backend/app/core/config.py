@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     # External API Settings
     JGRANTS_BASE_URL: str = "https://api.jgrants-portal.go.jp/exp/v1/public"
 
+    # Mock Mode (for development/testing)
+    MOCK_MODE: bool = True  # Set to False in production
+
     # Redis Settings
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
