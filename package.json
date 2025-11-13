@@ -1,0 +1,26 @@
+{
+  "name": "grants-search-system",
+  "version": "1.0.0",
+  "description": "Japanese Subsidies and Grants Search System",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload",
+    "dev:frontend": "streamlit run app.py --server.port 8501 --server.headless true",
+    "start": "npm run dev",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "keywords": [
+    "grants",
+    "subsidies",
+    "fastapi",
+    "streamlit",
+    "jgrants"
+  ],
+  "author": "",
+  "license": "MIT"
+}
